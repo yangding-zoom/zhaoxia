@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>光云 · 照虾灯</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0b0f16;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 560px;
+            width: 100%;
+            background: #11161f;
+            border-radius: 48px;
+            padding: 32px 28px 40px;
+            border: 1px solid #253141;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+        }
+        .title { text-align: center; margin-bottom: 32px; }
+        .title small {
+            font-size: 12px;
+            color: #6c86a3;
+            background: #0e131c;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+        .title h1 {
+            font-size: 28px;
+            font-weight: 500;
+            color: #eef3ff;
+            margin-top: 12px;
+        }
+        .lights {
+            display: flex;
+            gap: 12px;
+            margin: 32px 0;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .light-item {
+            flex: 1;
+            background: #0c111a;
+            border-radius: 32px;
+            padding: 16px 6px;
+            text-align: center;
+            border: 0.5px solid #253141;
+        }
+        .light-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: #8ea1bb;
+            margin-bottom: 12px;
+        }
+        .lamp {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 10px;
+            background: #19212b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            transition: 0.2s;
+        }
+        .status-text {
+            font-size: 11px;
+            background: #0a0f16;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: #7b8da3;
+        }
+        .pay-section {
+            background: #0a0f16;
+            border-radius: 28px;
+            padding: 20px 16px;
+            margin: 20px 0 16px;
+            text-align: center;
+            border: 0.5px solid #25313f;
+        }
+        .pay-title {
+            color: #b8ceff;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        .pay-qrcodes {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .qrcode-item { text-align: center; }
+        .qrcode-item img {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            background: white;
+            padding: 8px;
+            cursor: pointer;
+        }
+        .qrcode-item p {
+            font-size: 11px;
+            color: #7c8ba5;
+            margin-top: 8px;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffd966;
+            margin: 12px 0 4px;
+        }
+        .btn {
+            width: 100%;
+            background: #1e2a38;
+            border: 1px solid #2e4b66;
+            border-radius: 60px;
+            padding: 14px 0;
+            font-size: 18px;
+            font-weight: 500;
+            color: #eef3ff;
+            cursor: pointer;
+            transition: 0.15s;
+            margin: 8px 0 16px;
+        }
+        .btn:hover { background: #2a3f52; border-color: #4b7ea0; }
+        .api-box {
+            background: #0a0f16;
+            border-radius: 32px;
+            padding: 16px;
+            margin-top: 8px;
+            display: none;
+            border: 0.5px solid #25313f;
+        }
+        .api-box input {
+            width: 100%;
+            background: #01050c;
+            border: 1px solid #2f4259;
+            padding: 12px 16px;
+            border-radius: 60px;
+            color: #eef3ff;
+            font-size: 13px;
+            font-family: monospace;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .api-box button {
+            background: #2b435b;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .msg {
+            font-size: 12px;
+            text-align: center;
+            color: #7d93af;
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 0.5px solid #1e2a36;
+        }
+        .footer {
+            font-size: 11px;
+            text-align: center;
+            color: #3e526b;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+<div class="card" id="app">
+    <div class="title">
+        <small>光云 · 照虾灯</small>
+        <h1>五盏灯 · 一只虾</h1>
+    </div>
+
+    <div class="lights" id="lights">
+        <div class="light-item" data-key="safe"><div class="light-name">安全</div><div class="lamp">⚫</div><div class="status-text">未照</div></div>
+        <div class="light-item" data-key="memory"><div class="light-name">记忆</div><div class="lamp">⚫</div><div class="status-text">未照</div></div>
+        <div class="light-item" data-key="eco"><div class="light-name">生态</div><div class="lamp">⚫</div><div class="status-text">未照</div></div>
+        <div class="light-item" data-key="cost"><div class="light-name">成本</div><div class="lamp">⚫</div><div class="status-text">未照</div></div>
+        <div class="light-item" data-key="skill"><div class="light-name">技能</div><div class="lamp">⚫</div><div class="status-text">未照</div></div>
+    </div>
+
+    <div id="unpaidBlock">
+        <div class="pay-section">
+            <div class="pay-title">🔆 灯亮着，虾才能照</div>
+            <div class="price">9.9 元/月</div>
+            <div class="price-note">付一次，灯亮30天。光引光，自己看。</div>
+            <div class="pay-qrcodes">
+                <div class="qrcode-item">
+                    <img src="alipay.png" alt="支付宝" onclick="window.location.href='https://qr.alipay.com/fkx02298cjrkdftnezb9r4d'">
+                    <p>支付宝 9.9元/月</p>
+                </div>
+                <div class="qrcode-item">
+                    <img src="wechat.png" alt="微信" onclick="alert('请用微信扫码支付9.9元，付完点击返回商家')">
+                    <p>微信 9.9元/月</p>
+                </div>
+            </div>
+            <p style="font-size:10px; color:#4a627a; margin-top:12px;">付完自动返回，灯就亮了</p>
+        </div>
+        <div class="msg">扫码支付后自动亮灯。光云不碰密钥，不留数据。</div>
+    </div>
+
+    <div id="paidBlock" style="display:none;">
+        <button class="btn" id="shineBtn">🔦 照一下我的龙虾</button>
+        <div class="api-box" id="apiBox">
+            <input type="password" id="apiKey" placeholder="API Key / 龙虾密钥" autocomplete="off">
+            <button id="submitKey">开始照</button>
+        </div>
+    </div>
+
+    <div class="msg" id="msgBox">光引光。密钥只在你手里，光云不碰数据。</div>
+    <div class="footer">红黄绿 · 你自己看</div>
+</div>
+
+<script>
+    // 支付状态
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('paid') === '1') {
+        const expire = Date.now() + 30 * 24 * 60 * 60 * 1000;
+        localStorage.setItem('zhaoxia_light', 'true');
+        localStorage.setItem('zhaoxia_expire', expire);
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+    
+    let isPaid = false;
+    const stored = localStorage.getItem('zhaoxia_light');
+    const expireTime = localStorage.getItem('zhaoxia_expire');
+    if (stored === 'true' && expireTime && Date.now() < parseInt(expireTime)) {
+        isPaid = true;
+    }
+    
+    if (isPaid) {
+        document.getElementById('unpaidBlock').style.display = 'none';
+        document.getElementById('paidBlock').style.display = 'block';
+        document.getElementById('msgBox').innerHTML = '灯已亮。贴入密钥，五盏灯自己照。';
+    }
+
+    // 照虾逻辑
+    function getMockStatus(key) {
+        let hash = 0;
+        if (key) for(let i=0;i<key.length;i++) hash += key.charCodeAt(i);
+        else hash = Date.now() % 1000;
+        const gen = (base) => ((hash * base) % 97);
+        const safe = gen(13), mem = gen(27), eco = gen(41), cost = gen(53), skill = gen(61);
+        const toStatus = (v) => v >= 68 ? 'green' : (v >= 38 ? 'yellow' : 'red');
+        return {
+            safe: toStatus(safe), memory: toStatus(mem), eco: toStatus(eco),
+            cost: toStatus(cost), skill: toStatus(skill),
+            scores: {safe,mem,eco,cost,skill}
+        };
+    }
+    
+    function setLamp(key, status) {
+        const item = document.querySelector(`.light-item[data-key="${key}"]`);
+        if (!item) return;
+        const lampDiv = item.querySelector('.lamp');
+        const textSpan = item.querySelector('.status-text');
+        if (status === 'green') { lampDiv.innerHTML = '🟢'; textSpan.innerText = '稳'; }
+        else if (status === 'yellow') { lampDiv.innerHTML = '🟡'; textSpan.innerText = '慎'; }
+        else if (status === 'red') { lampDiv.innerHTML = '🔴'; textSpan.innerText = '危'; }
+        else { lampDiv.innerHTML = '⚫'; textSpan.innerText = '未照'; }
+    }
+    
+    function resetLamps() {
+        ['safe','memory','eco','cost','skill'].forEach(k => setLamp(k, 'gray'));
+    }
+    
+    function applyResult(result) {
+        setLamp('safe', result.safe);
+        setLamp('memory', result.memory);
+        setLamp('eco', result.eco);
+        setLamp('cost', result.cost);
+        setLamp('skill', result.skill);
+        document.getElementById('msgBox').innerHTML = `🕯️ 光云照见：安全 ${result.scores.safe} · 记忆 ${result.scores.memory} · 生态 ${result.scores.eco} · 成本 ${result.scores.cost} · 技能 ${result.scores.skill}<br>红黄绿，你自己看。灯亮了，虾就活了。`;
+    }
+
+    if (isPaid) {
+        const shineBtn = document.getElementById('shineBtn');
+        const apiBox = document.getElementById('apiBox');
+        const submitBtn = document.getElementById('submitKey');
+        const apiInput = document.getElementById('apiKey');
+        shineBtn.onclick = () => {
+            apiBox.style.display = 'block';
+            shineBtn.disabled = true;
+            shineBtn.style.opacity = '0.5';
+            shineBtn.innerText = '🔦 等待密钥';
+            resetLamps();
+            document.getElementById('msgBox').innerHTML = '把龙虾的密钥贴进来。光云不碰数据，只看缝隙。';
+        };
+        submitBtn.onclick = () => {
+            let key = apiInput.value.trim();
+            if (!key) key = 'demo_shrimp';
+            const result = getMockStatus(key);
+            applyResult(result);
+            shineBtn.disabled = false;
+            shineBtn.style.opacity = '1';
+            shineBtn.innerText = '🔦 照一下我的龙虾';
+            apiBox.style.display = 'none';
+            apiInput.value = '';
+        };
+    }
+</script>
+</body>
+</html>
